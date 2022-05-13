@@ -27,8 +27,8 @@ pub struct Welcome {
 impl Default for Welcome {
   fn default() -> Self {
     Self {
-        records: LookupMap::new(b"a".to_vec()),
-        ipfs: LookupMap::new(b"a".to_vec()),
+        records: LookupMap::new(b"records".to_vec()),
+        ipfs: LookupMap::new(b"ipfs".to_vec()),
     }
   }
 }
@@ -56,33 +56,41 @@ impl Welcome {
             })
             .to_string(),
         );
-
-        env::log_str(
-            &json!({
-                "method": "gas",
-                "prepaid_gas": env::prepaid_gas(),
-                "used_gas": env::used_gas(), 
-            })
-            .to_string(),
-        ); 
+        // TODO: conflicto con los test de frontend  [prepaid_gas]
+        // env::log_str(
+        //     &json!({
+        //         "method": "gas",
+        //         "prepaid_gas": env::prepaid_gas(),
+        //         "used_gas": env::used_gas(), 
+        //     })
+        //     .to_string(),
+        // ); 
     }
 
  
     pub fn get_greeting(&self, account_id: AccountId) -> String {
-        env::log_str(
-            &json!({
-                "method": "set_greeting",
-                "prepaid_gas": env::prepaid_gas(),
-                "used_gas": env::used_gas(), 
-            })
-            .to_string(),
-        ); 
+        // env::log_str(
+        //     &json!({
+        //         "method": "set_greeting",
+        //         "prepaid_gas": env::prepaid_gas(),
+        //         "used_gas": env::used_gas(), 
+        //     })
+        //     .to_string(),
+        // ); 
 
         match self.records.get(&account_id.to_string()) {
             Some(greeting) => greeting,
             None => "Hello".to_string(),
         }        
     }
+
+    // #[payable]
+    // pub fn get_greeting_payable(&mut self, account_id: AccountId) -> String { 
+    //     match self.records.get(&account_id.to_string()) {
+    //         Some(greeting) => greeting,
+    //         None => "Hello".to_string(),
+    //     }        
+    // }
 
     // IPFS 
     pub fn set_ipfs(&mut self, cid: String) {
@@ -106,26 +114,26 @@ impl Welcome {
             .to_string(),
         );
 
-        env::log_str(
-            &json!({
-                "method": "gas",
-                "prepaid_gas": env::prepaid_gas(),
-                "used_gas": env::used_gas(), 
-            })
-            .to_string(),
-        ); 
+        // env::log_str(
+        //     &json!({
+        //         "method": "gas",
+        //         "prepaid_gas": env::prepaid_gas(),
+        //         "used_gas": env::used_gas(), 
+        //     })
+        //     .to_string(),
+        // ); 
     }
 
 
     pub fn get_ipfs(&self, account_id: AccountId) -> String {
-        env::log_str(
-            &json!({
-                "method": "set_ipfs",
-                "prepaid_gas": env::prepaid_gas(),
-                "used_gas": env::used_gas(), 
-            })
-            .to_string(),
-        ); 
+        // env::log_str(
+        //     &json!({
+        //         "method": "set_ipfs",
+        //         "prepaid_gas": env::prepaid_gas(),
+        //         "used_gas": env::used_gas(), 
+        //     })
+        //     .to_string(),
+        // ); 
 
         match self.ipfs.get(&account_id.to_string()) {
             Some(ipfs) => ipfs,
@@ -183,6 +191,20 @@ mod tests {
         );
     }
 
+    // #[test]
+    // fn set_then_get_greeting_payable() {
+    //     // let context = get_context(vec![], false);
+    //     let context = get_context(false);
+    //     testing_env!(context);
+    //     let mut contract = Welcome::default();
+    //     contract.set_greeting("howdy".to_string());
+    //     assert_eq!(
+    //         "howdy".to_string(),
+    //         contract.get_greeting_payable(accounts(0))
+    //     );
+    // }
+    
+
     #[test]
     fn get_default_greeting() {
         // let context = get_context(vec![], true);
@@ -221,4 +243,42 @@ mod tests {
             contract.get_ipfs(accounts(1))
         );
     }    
+
+
+    #[test]
+    fn get_both_greeting() {
+        // let context = get_context(vec![], true);
+        let context = get_context(false);
+        testing_env!(context);
+        let mut contract = Welcome::default();
+        
+        contract.set_greeting("howdy".to_string());
+        contract.set_ipfs("cadena".to_string());
+
+
+        assert_eq!(
+            "howdy".to_string(),
+            contract.get_greeting(accounts(0))
+        ); 
+        
+
+    }    
+
+    #[test]
+    fn get_both_ipfs() {
+        // let context = get_context(vec![], true);
+        let context = get_context(false);
+        testing_env!(context);
+        let mut contract = Welcome::default();
+        
+        contract.set_greeting("howdy".to_string());
+        contract.set_ipfs("cadena".to_string());
+
+
+        assert_eq!(
+            "cadena".to_string(),
+            contract.get_ipfs(accounts(0))
+        );
+
+    }        
 }
