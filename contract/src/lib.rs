@@ -34,25 +34,30 @@ impl Default for Welcome {
 #[near_bindgen]
 impl Welcome {
     pub fn set_greeting(&mut self, message: String) {
-        let account_id = env::signer_account_id();
+        let signer_account_id = env::signer_account_id();   // initial
+        let current_account_id = env::current_account_id(); // contract id
+        let predecessor_account_id = env::predecessor_account_id(); // contract id
+        
 
         // Use env::log to record logs permanently to the blockchain!
         // env::log_str(format!("Saving greeting '{}' for account '{}'", message, account_id,).as_bytes());
 
         env::log_str(
             &json!({
-                "type": "delete_offer",
+                "method": "set_greeting",
                 "params": {
-                    "nft_contract_id": "offer.nft_contract_id.clone()",
-                    "buyer_id": "offer.buyer_id.clone()",
-                    "token_id": "offer.token_id.clone()",
-                    
+                    "message": message
+                },
+                "accounts": {
+                    "signer_account_id": signer_account_id.to_string(),
+                    "current_account_id": current_account_id.to_string(),
+                    "predecessor_account_id": predecessor_account_id.to_string(),                    
                 }
             })
             .to_string(),
         );
 
-        self.records.insert(&account_id.to_string(), &message);
+        self.records.insert(&signer_account_id.to_string(), &message);
     }
 
     // `match` is similar to `switch` in other languages; here we use it to default to "Hello" if
