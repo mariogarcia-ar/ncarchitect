@@ -92,13 +92,12 @@ impl Welcome {
         assert_eq!(env::promise_results_count(), 1, "ERR_TOO_MANY_RESULTS");
         match env::promise_result(0) {
             PromiseResult::NotReady => unreachable!(),
-            PromiseResult::Successful(_val) => {
-                // "hoa".to_string()
-                let result = promise_result_as_success();
-                // result(0).to_string()
-                // result[0].unwrap()
-                // _val[0].to_string()
-                json!(result.unwrap()).to_string()
+            PromiseResult::Successful(_val) => { 
+                let result = promise_result_as_success(); 
+                let res: String = near_sdk::serde_json::from_slice::<String>(&result.unwrap())
+                                .expect("Unable to unwrap the result into a Pet");
+                res
+
             },
             PromiseResult::Failed => env::panic_str("ERR_CALL_FAILED"),
         }
