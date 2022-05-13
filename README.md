@@ -7,7 +7,11 @@ Notes
 =====
  
 
-![alt text](./src/assets/WhatsApp Image 2022-05-13 at 6.19.11 PM.jpeg)
+![Img 1](https://github.com/mariogarcia-ar/ncarchitect/blob/603c7ebc5462b0b53c1ebdd701ab97ee682d4c29/src/assets/WhatsApp%20Image%202022-05-13%20at%206.19.11%20PM.jpeg)
+
+![Img 1](https://github.com/mariogarcia-ar/ncarchitect/blob/603c7ebc5462b0b53c1ebdd701ab97ee682d4c29/src/assets/WhatsApp%20Image%202022-05-13%20at%206.19.12%20PM%20(1).jpeg)
+
+![Img 1](https://github.com/mariogarcia-ar/ncarchitect/blob/603c7ebc5462b0b53c1ebdd701ab97ee682d4c29/src/assets/WhatsApp%20Image%202022-05-13%20at%206.19.12%20PM.jpeg)
 Quick Start
 ===========
 
