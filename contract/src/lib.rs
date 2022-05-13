@@ -21,54 +21,118 @@ use near_sdk::collections::LookupMap;
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Welcome {
     records: LookupMap<String, String>,
+    ipfs: LookupMap<String, String>,
 }
 
 impl Default for Welcome {
   fn default() -> Self {
     Self {
-      records: LookupMap::new(b"a".to_vec()),
+        records: LookupMap::new(b"a".to_vec()),
+        ipfs: LookupMap::new(b"a".to_vec()),
     }
   }
 }
 
 #[near_bindgen]
 impl Welcome {
+    // Greeting 
     pub fn set_greeting(&mut self, message: String) {
         let signer_account_id = env::signer_account_id();   // initial
         let current_account_id = env::current_account_id(); // contract id
         let predecessor_account_id = env::predecessor_account_id(); // contract id
-        
 
-        // Use env::log to record logs permanently to the blockchain!
-        // env::log_str(format!("Saving greeting '{}' for account '{}'", message, account_id,).as_bytes());
+        self.records.insert(&signer_account_id.to_string(), &message);
 
+
+        // Logs
         env::log_str(
             &json!({
                 "method": "set_greeting",
-                "params": {
-                    "message": message
-                },
-                "accounts": {
-                    "signer_account_id": signer_account_id.to_string(),
-                    "current_account_id": current_account_id.to_string(),
-                    "predecessor_account_id": predecessor_account_id.to_string(),                    
-                }
+                "message": message,
+                "signer_account_id": signer_account_id.to_string(),
+                "current_account_id": current_account_id.to_string(),
+                "predecessor_account_id": predecessor_account_id.to_string(), 
+
             })
             .to_string(),
         );
 
-        self.records.insert(&signer_account_id.to_string(), &message);
+        env::log_str(
+            &json!({
+                "method": "gas",
+                "prepaid_gas": env::prepaid_gas(),
+                "used_gas": env::used_gas(), 
+            })
+            .to_string(),
+        ); 
     }
 
-    // `match` is similar to `switch` in other languages; here we use it to default to "Hello" if
-    // self.records.get(&account_id) is not yet defined.
-    // Learn more: https://doc.rust-lang.org/book/ch06-02-match.html#matching-with-optiont
+ 
     pub fn get_greeting(&self, account_id: AccountId) -> String {
+        env::log_str(
+            &json!({
+                "method": "set_greeting",
+                "prepaid_gas": env::prepaid_gas(),
+                "used_gas": env::used_gas(), 
+            })
+            .to_string(),
+        ); 
+
         match self.records.get(&account_id.to_string()) {
             Some(greeting) => greeting,
             None => "Hello".to_string(),
-        }
+        }        
     }
+
+    // IPFS 
+    pub fn set_ipfs(&mut self, cid: String) {
+        let signer_account_id = env::signer_account_id();   // initial
+        let current_account_id = env::current_account_id(); // contract id
+        let predecessor_account_id = env::predecessor_account_id(); // contract id
+
+        self.ipfs.insert(&signer_account_id.to_string(), &cid);
+
+
+        // Logs
+        env::log_str(
+            &json!({
+                "method": "set_ipfs",
+                "cid": cid,
+                "signer_account_id": signer_account_id.to_string(),
+                "current_account_id": current_account_id.to_string(),
+                "predecessor_account_id": predecessor_account_id.to_string(), 
+
+            })
+            .to_string(),
+        );
+
+        env::log_str(
+            &json!({
+                "method": "gas",
+                "prepaid_gas": env::prepaid_gas(),
+                "used_gas": env::used_gas(), 
+            })
+            .to_string(),
+        ); 
+    }
+
+
+    pub fn get_ipfs(&self, account_id: AccountId) -> String {
+        env::log_str(
+            &json!({
+                "method": "set_ipfs",
+                "prepaid_gas": env::prepaid_gas(),
+                "used_gas": env::used_gas(), 
+            })
+            .to_string(),
+        ); 
+
+        match self.ipfs.get(&account_id.to_string()) {
+            Some(ipfs) => ipfs,
+            None => "QmX6AxffLDNuXgej7UbheXDxhHPyHjUjDRMGbDLwhipRF2".to_string(),
+        }        
+    }
+
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
@@ -131,4 +195,30 @@ mod tests {
             contract.get_greeting(accounts(1))
         );
     }
+
+    // IPFS
+    #[test]
+    fn set_then_get_ipfs() {
+        let context = get_context(false);
+        testing_env!(context);
+        let mut contract = Welcome::default();
+        contract.set_ipfs("QmQjDs2ix3CJKc6kjRT56L4krhsSGUurASvfTJkCuZedf3".to_string());
+        assert_eq!(
+            "QmQjDs2ix3CJKc6kjRT56L4krhsSGUurASvfTJkCuZedf3".to_string(),
+            contract.get_ipfs(accounts(0))
+        );
+    }
+
+    #[test]
+    fn get_default_ipfs() {
+        // let context = get_context(vec![], true);
+        let context = get_context(false);
+        testing_env!(context);
+        let contract = Welcome::default();
+        // this test did not call set_ipfs so should return the default "Hello" ipfs
+        assert_eq!(
+            "QmX6AxffLDNuXgej7UbheXDxhHPyHjUjDRMGbDLwhipRF2".to_string(),
+            contract.get_ipfs(accounts(1))
+        );
+    }    
 }
