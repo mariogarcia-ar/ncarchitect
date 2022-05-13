@@ -3,7 +3,11 @@ tcograph
 
 This [React] app was initialized with [create-near-app]
 
+Notes
+=====
+ 
 
+![alt text](./src/assets/WhatsApp Image 2022-05-13 at 6.19.11 PM.jpeg)
 Quick Start
 ===========
 
