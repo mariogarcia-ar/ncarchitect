@@ -1,0 +1,18 @@
+specVersion: 0.0.2
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: near
+    name: Welcome
+    network: near-testnet
+    source:
+      account: dev-1652457081622-60835668121812
+      startBlock: 89758564
+    mapping:
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Greeting
+      receiptHandlers:
+        - handler: handleReceipt
+      file: Welcome/Welcome.wasm

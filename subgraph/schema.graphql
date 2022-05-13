@@ -1,0 +1,5 @@
+type Saludo @entity {
+  id: ID!
+  signer_account_id: String!
+  message: String!
+}
